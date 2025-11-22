@@ -1,0 +1,16 @@
+{
+    "name": "Synthesia Video Generator",
+    "id": "synthesia-video-generator",
+    "api": "1.0.0",
+    "main": "dist/code.js",
+    "ui": "dist/src/ui.html",
+    "editorType": [
+        "figma"
+    ],
+    "networkAccess": {
+        "allowedDomains": [
+            "*"
+        ],
+        "reasoning": "Required to download generated videos from dynamic CDN URLs."
+    }
+}

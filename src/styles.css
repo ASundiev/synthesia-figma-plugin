@@ -1,0 +1,258 @@
+:root {
+  --color-bg: #F2F2F4;
+  /* Updated background color */
+  --color-text: #1a1a1a;
+  /* Dark text */
+  --color-text-secondary: #6b7280;
+  /* Grey text */
+  --color-primary: rgb(62, 87, 218);
+  /* Brand Blue */
+  --color-primary-hover: rgb(50, 70, 180);
+  --color-input-bg: #f3f4f6;
+  /* Light grey input background */
+  --color-border: #e5e7eb;
+  /* Light grey border */
+  --font-family: 'Basier Square', 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100vh;
+  /* Changed to min-height */
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  /* Updated radius */
+  box-shadow: none;
+  /* Removed shadow */
+  border: none;
+  /* Ensure no border */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-family: "Basier Square", system-ui, "Segoe WP", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.72px;
+  color: rgba(5, 5, 6, 0.96);
+  margin-bottom: 4px;
+  padding-left: 4px;
+  /* Align with card visual */
+}
+
+label {
+  font-family: "Basier Square", system-ui, "Segoe WP", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 16px;
+  color: rgba(5, 5, 6, 0.96);
+  display: flex;
+  height: 32px;
+  -webkit-box-align: center;
+  align-items: center;
+  margin-bottom: 0;
+  /* Reset margin since height handles spacing */
+}
+
+input,
+textarea,
+select {
+  font-family: "Basier Square", system-ui, "Segoe WP", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(5, 5, 6, 0.96);
+  box-sizing: border-box;
+  cursor: text;
+  -webkit-box-align: center;
+  align-items: center;
+  position: relative;
+  background-color: rgba(43, 46, 64, 0.06);
+  display: flex;
+  border-radius: 8px;
+  padding: 4px 12px;
+  /* Added horizontal padding for text */
+  transition: border-color 80ms cubic-bezier(0.4, 0, 0.2, 1), background-color 80ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1 1 auto;
+  border: 1px solid transparent;
+  /* implicit from transition */
+  outline: none;
+  width: 100%;
+  /* Ensure full width */
+  height: 40px;
+  /* Restored height */
+}
+
+textarea {
+  height: auto;
+  min-height: 160px;
+  /* Increased height further */
+  padding: 12px;
+  display: block;
+  font-family: "Basier Square Mono", "Roboto Mono", Monaco, "Courier New", monospace;
+  color: rgba(5, 5, 6, 0.96);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(110, 110, 115);
+  /* Updated placeholder color */
+  opacity: 1;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(62, 87, 218, 0.1);
+}
+
+button {
+  width: 100%;
+  height: 32px;
+  /* Fixed height as requested */
+  padding: 0 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--color-primary);
+  color: white;
+  font-family: "Basier Square", system-ui, "Segoe WP", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background-color: rgba(43, 46, 64, 0.06);
+  /* Extracted background */
+  border: none;
+  /* No border */
+  color: rgba(5, 5, 6, 0.96);
+  /* Dark text */
+}
+
+.secondary-button:hover {
+  background-color: rgba(43, 46, 64, 0.1);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  /* Reduced opacity to see blur better */
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.loading-logo {
+  animation: pulse 1.5s infinite ease-in-out;
+  /* Slightly faster */
+  margin-bottom: 24px;
+}
+
+.loading-text {
+  font-family: "Basier Square", system-ui, "Segoe WP", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(5, 5, 6, 0.96);
+  margin-bottom: 8px;
+}
+
+.loading-subtext {
+  font-family: "Basier Square", system-ui, "Segoe WP", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  color: rgba(5, 5, 6, 0.6);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 13px;
+  margin-top: 8px;
+  background: rgba(255, 77, 79, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.success-message {
+  color: #52c41a;
+  font-size: 13px;
+  margin-top: 8px;
+}
