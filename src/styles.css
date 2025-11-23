@@ -40,29 +40,6 @@ body {
   box-sizing: border-box;
 }
 
-.container {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-height: 100vh;
-  /* Changed to min-height */
-}
-
-.card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  /* Updated radius */
-  box-shadow: none;
-  /* Removed shadow */
-  border: none;
-  /* Ensure no border */
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 h1,
 h2,
 h3 {
@@ -513,8 +490,128 @@ button:disabled {
   border-radius: 6px;
 }
 
-.success-message {
-  color: #52c41a;
-  font-size: 13px;
-  margin-top: 8px;
+.container {
+  padding: 16px;
+  /* 16px padding around the content */
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100vh;
+  /* Fixed height to viewport */
+  overflow: hidden;
+  /* Prevent scroll */
+  background-color: #F2F2F4;
+  /* Grey background for the whole window */
+}
+
+/* Main Screen Layout */
+.main-layout {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  /* Stretch columns to full height */
+  width: 100%;
+  flex: 1;
+  /* Fill remaining vertical space */
+  min-height: 0;
+  /* Allow shrinking */
+  padding: 0;
+}
+
+.left-column {
+  width: 400px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: transparent;
+  /* Transparent to show container grey */
+  padding: 8px 0 0 0;
+  /* Top padding only */
+  border-radius: 8px;
+  /* Rounded corners */
+}
+
+.form-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* Spacing between fields */
+  flex-grow: 1;
+  /* Fill remaining height */
+  overflow: hidden;
+}
+
+.script-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  /* Fill remaining space in card */
+  min-height: 0;
+  /* Allow shrinking */
+}
+
+.script-container textarea {
+  flex-grow: 1;
+  /* Fill container */
+  height: 100%;
+  min-height: 0;
+  /* Override previous min-height */
+  resize: none;
+  /* Disable manual resize */
+}
+
+.right-column {
+  width: 900px;
+  /* Exact design width */
+  flex-shrink: 0;
+  /* height: 100%; Removed, handled by align-items: stretch */
+  border-radius: 8px;
+  /* Rounded corners */
+  overflow: hidden;
+}
+
+.tutorial-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* Fill column */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tutorial-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  background-color: #000;
+  /* Placeholder bg */
+}
+
+.close-tutorial-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #3E57DA;
+  border: 1px solid rgba(233, 236, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s;
+  z-index: 10;
+}
+
+.close-tutorial-btn:hover {
+  transform: scale(1.1);
+  background-color: #354bb8;
 }

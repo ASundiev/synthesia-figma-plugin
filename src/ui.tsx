@@ -14,6 +14,19 @@ const App = () => {
     });
     const [status, setStatus] = useState('');
     const [error, setError] = useState('');
+    const [showTutorial, setShowTutorial] = useState(true);
+
+    useEffect(() => {
+        // Request tutorial status
+        window.parent.postMessage({ pluginMessage: { type: 'get-tutorial-status' } }, '*');
+    }, []);
+
+    const handleCloseTutorial = () => {
+        setShowTutorial(false);
+        window.parent.postMessage({ pluginMessage: { type: 'set-tutorial-status', showTutorial: false } }, '*');
+        // Resize window to single column (400px + 32px padding = 432px)
+        window.parent.postMessage({ pluginMessage: { type: 'resize-window', width: 432, height: 720 } }, '*');
+    };
 
     useEffect(() => {
         // Listen for route messages from code.ts
@@ -30,6 +43,14 @@ const App = () => {
             } else if (msg.type === 'download-failed') {
                 setError(`Download failed: ${msg.error}`);
                 setStep('config');
+            } else if (msg.type === 'tutorial-status') {
+                setShowTutorial(msg.showTutorial);
+                // Resize based on status
+                if (msg.showTutorial) {
+                    window.parent.postMessage({ pluginMessage: { type: 'resize-window', width: 1348, height: 720 } }, '*');
+                } else {
+                    window.parent.postMessage({ pluginMessage: { type: 'resize-window', width: 432, height: 720 } }, '*');
+                }
             }
         };
 
@@ -168,46 +189,70 @@ const App = () => {
             )}
 
             {(step === 'config' || step === 'generating') && (
-                <>
-                    <h1>Create a video</h1>
+                <div className={`main-layout ${showTutorial ? 'with-tutorial' : ''}`}>
+                    <div className="left-column">
+                        <h1>Create a video</h1>
 
-                    <div className="card">
-                        <div>
-                            <label>Title</label>
-                            <input
-                                value={config.title}
-                                onChange={(e) => setConfig({ ...config, title: e.target.value })}
-                                placeholder="My Synthesia Video"
-                                disabled={step === 'generating'}
-                            />
+                        <div className="form-card">
+                            <div>
+                                <label>Title</label>
+                                <input
+                                    value={config.title}
+                                    onChange={(e) => setConfig({ ...config, title: e.target.value })}
+                                    placeholder="My Synthesia Video"
+                                    disabled={step === 'generating'}
+                                />
+                            </div>
+
+                            <div>
+                                <label>Avatar ID</label>
+                                <input
+                                    value={config.avatar}
+                                    onChange={(e) => setConfig({ ...config, avatar: e.target.value })}
+                                    placeholder="e.g. anna_costume1_cameraA"
+                                    disabled={step === 'generating'}
+                                />
+                            </div>
+
+                            <div className="script-container">
+                                <label>Script</label>
+                                <textarea
+                                    value={config.scriptText}
+                                    onChange={(e) => setConfig({ ...config, scriptText: e.target.value })}
+                                    placeholder="Hello! This is a video generated directly from Figma."
+                                    disabled={step === 'generating'}
+                                />
+                            </div>
+
+                            {error && <div className="error-message">{error}</div>}
+
+                            <button onClick={handleGenerate} disabled={step === 'generating'}>Generate</button>
                         </div>
-
-                        <div>
-                            <label>Avatar ID</label>
-                            <input
-                                value={config.avatar}
-                                onChange={(e) => setConfig({ ...config, avatar: e.target.value })}
-                                placeholder="e.g. anna_costume1_cameraA"
-                                disabled={step === 'generating'}
-                            />
-                        </div>
-
-                        <div>
-                            <label>Script</label>
-                            <textarea
-                                rows={4}
-                                value={config.scriptText}
-                                onChange={(e) => setConfig({ ...config, scriptText: e.target.value })}
-                                placeholder="Hello! This is a video generated directly from Figma."
-                                disabled={step === 'generating'}
-                            />
-                        </div>
-
-                        {error && <div className="error-message">{error}</div>}
-
-                        <button onClick={handleGenerate} style={{ marginTop: '16px' }} disabled={step === 'generating'}>Generate</button>
                     </div>
-                </>
+
+                    {showTutorial && (
+                        <div className="right-column">
+                            <div className="tutorial-container">
+                                <video
+                                    className="tutorial-video"
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    src="https://cdn.synthesia.io/tutorial_placeholder.mp4" // Placeholder
+                                    poster="https://cdn.prod.website-files.com/65e89895c5a4b8d764c0d710/67ea9f12e8a6aa7e90577688_home-new-hero-bg.svg" // Placeholder poster
+                                >
+                                </video>
+                                <button className="close-tutorial-btn" onClick={handleCloseTutorial}>
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 3L3 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M3 3L9 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             )}
 
             {step === 'generating' && (
