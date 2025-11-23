@@ -12,5 +12,15 @@
             "*"
         ],
         "reasoning": "Required to download generated videos from dynamic CDN URLs."
-    }
+    },
+    "menu": [
+        {
+            "name": "Run",
+            "command": "run"
+        },
+        {
+            "name": "Set API Key",
+            "command": "set_api_key"
+        }
+    ]
 }

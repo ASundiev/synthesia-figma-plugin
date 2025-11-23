@@ -1,9 +1,21 @@
 /// <reference types="@figma/plugin-typings" />
 
-figma.showUI(__html__, { width: 400, height: 600, themeColors: true });
+// Show the UI
+figma.showUI(__html__, { width: 400, height: 600 });
 
+// Handle commands
+if (figma.command === 'set_api_key') {
+    figma.ui.postMessage({ type: 'route', route: 'api_settings' });
+    figma.ui.resize(400, 300); // Smaller window for settings
+} else {
+    figma.ui.postMessage({ type: 'route', route: 'intro' });
+}
+
+// Handle messages from the UI
 figma.ui.onmessage = async (msg) => {
-    if (msg.type === 'save-api-key') {
+    if (msg.type === 'resize-ui') {
+        figma.ui.resize(msg.width, msg.height);
+    } else if (msg.type === 'save-api-key') {
         await figma.clientStorage.setAsync('synthesia_api_key', msg.apiKey);
         figma.notify('API Key saved');
     } else if (msg.type === 'get-api-key') {

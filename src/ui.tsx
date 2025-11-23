@@ -4,7 +4,7 @@ import './styles.css';
 import { createVideo, getVideoStatus } from './synthesia';
 
 const App = () => {
-    const [step, setStep] = useState<'auth' | 'config' | 'generating' | 'success'>('auth');
+    const [step, setStep] = useState<'intro' | 'auth' | 'config' | 'generating' | 'success' | 'api_settings'>('intro');
     const [apiKey, setApiKey] = useState('');
     const [config, setConfig] = useState({
         title: '',
@@ -16,14 +16,15 @@ const App = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        // Check for existing API key
-        window.parent.postMessage({ pluginMessage: { type: 'get-api-key' } }, '*');
-
+        // Listen for route messages from code.ts
         window.onmessage = (event) => {
             const msg = event.data.pluginMessage;
-            if (msg.type === 'api-key' && msg.apiKey) {
+            if (msg.type === 'route') {
+                setStep(msg.route);
+            } else if (msg.type === 'api-key' && msg.apiKey) {
                 setApiKey(msg.apiKey);
-                setStep('config');
+                // If we were waiting for auth, proceed? 
+                // Actually, let's just store it. The user explicitly sets it in settings.
             } else if (msg.type === 'download-complete') {
                 setStep('success');
             } else if (msg.type === 'download-failed') {
@@ -31,15 +32,28 @@ const App = () => {
                 setStep('config');
             }
         };
+
+        // Check for existing API key on load (silently)
+        window.parent.postMessage({ pluginMessage: { type: 'get-api-key' } }, '*');
     }, []);
 
     const handleSaveKey = () => {
         if (!apiKey) return;
         window.parent.postMessage({ pluginMessage: { type: 'save-api-key', apiKey } }, '*');
-        setStep('config');
+        // Close plugin or show success? For now, maybe just stay or go to intro?
+        // Figma plugins usually close after a command, but here we might want to let them run.
+        // Let's just show a success message or go to intro if they want to run immediately.
+        // For 'Set API Key' command, usually you set it and close.
+        // But let's just go to 'intro' to allow them to run if they want.
+        setStep('intro');
+        window.parent.postMessage({ pluginMessage: { type: 'resize-ui', width: 400, height: 600 } }, '*');
     };
 
     const handleGenerate = async () => {
+        if (!apiKey) {
+            setError('API Key is missing. Please set it in the menu.');
+            return;
+        }
         setStep('generating');
         setStatus('Initializing video creation...');
         setError('');
@@ -61,11 +75,11 @@ const App = () => {
             const pollInterval = setInterval(async () => {
                 try {
                     const statusData = await getVideoStatus(apiKey, videoId);
-                    setStatus(`Status: ${statusData.status}`);
+                    // setStatus(`Status: ${statusData.status}`); // Don't show raw status text in new UI
 
                     if (statusData.status === 'complete') {
                         clearInterval(pollInterval);
-                        setStatus('Downloading video...');
+                        // setStatus('Downloading video...');
 
                         // 3. Download and Insert (Delegated to code.ts)
                         if (statusData.download) {
@@ -104,21 +118,53 @@ const App = () => {
 
     return (
         <div className="container">
-            {step === 'auth' && (
-                <>
-                    <h1>Synthesia Setup</h1>
-                    <p style={{ color: '#9ca3af', fontSize: '12px' }}>Enter your Synthesia API Key to get started.</p>
-                    <div>
-                        <label>API Key</label>
-                        <input
-                            type="password"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                            placeholder="Enter your API key"
-                        />
+            {step === 'intro' && (
+                <div className="intro-container">
+                    <div className="background-image-container">
+                        <img loading="eager" src="https://cdn.prod.website-files.com/65e89895c5a4b8d764c0d710/67ea9f12e8a6aa7e90577688_home-new-hero-bg.svg" alt="" className="background-cover-image" />
                     </div>
-                    <button onClick={handleSaveKey}>Continue</button>
-                </>
+
+                    <div className="intro-header">
+                        <svg width="30" height="20" viewBox="0 0 252 168" fill="none" xmlns="http://www.w3.org/2000/svg" className="intro-logo-icon">
+                            <path d="M43.784 167.963H184.095C218.661 167.963 240.681 146.713 244.266 114.195L251.434 46.8554H203.041L196.385 108.307C195.616 116.501 190.495 121.108 182.046 121.108H48.393L43.784 167.963ZM48.393 121.108L55.0497 59.6568C55.8185 51.4625 60.9394 46.8554 69.3887 46.8554H203.041L207.652 0H67.3392C32.7733 0 10.7538 21.2526 7.16856 53.7689L0 121.108H48.393Z" fill="#3E57DA" />
+                        </svg>
+                        <span className="intro-logo-text">synthesia</span>
+                    </div>
+
+                    <h1 className="intro-headline">
+                        Turn text to video,<br />
+                        in <span className="highlight-blue">minutes</span>
+                    </h1>
+
+                    <button className="primary-button-large" onClick={() => setStep('config')}>
+                        Get started
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M19 12H4.75" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+
+            {step === 'api_settings' && (
+                <div className="settings-container">
+                    <h3>Set API Key</h3>
+                    <div className="settings-steps">
+                        <p>1. Go to the <a href="https://synthesia.io" target="_blank">Synthesia website</a> and log in.</p>
+                        <p>2. Find your API key in the settings dashboard.</p>
+                    </div>
+                    <input
+                        type="password"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        placeholder="Api Key"
+                        className="settings-input"
+                    />
+                    <button onClick={handleSaveKey}>Save</button>
+                    <div className="settings-footer">
+                        More information about API keys <a href="#">here</a>.
+                    </div>
+                </div>
             )}
 
             {(step === 'config' || step === 'generating') && (
