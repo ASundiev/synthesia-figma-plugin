@@ -5,34 +5,21 @@ if (figma.command === 'set_api_key') {
     figma.showUI(__html__, { width: 400, height: 300 });
     figma.ui.postMessage({ type: 'route', route: 'api_key_settings' });
 } else {
-    figma.showUI(__html__, { width: 1348, height: 720 }); // Design dimensions with padding
+    figma.showUI(__html__, { width: 432, height: 768 }); // 400px content + 32px padding
     figma.ui.postMessage({ type: 'route', route: 'intro' });
 }
 
 // Handle messages from the UI
 figma.ui.onmessage = async (msg) => {
-    if (msg.type === 'resize-ui') {
-        figma.ui.resize(msg.width, msg.height);
-    } else if (msg.type === 'save-api-key') {
+    if (msg.type === 'save-api-key') {
         await figma.clientStorage.setAsync('synthesia_api_key', msg.apiKey);
         figma.notify('API Key saved');
+        // After saving, we can resize to main screen size
+        figma.ui.resize(432, 768);
     } else if (msg.type === 'get-api-key') {
         const apiKey = await figma.clientStorage.getAsync('synthesia_api_key');
         figma.ui.postMessage({ type: 'api-key', apiKey });
-    } else if (msg.type === 'resize-window') {
-        figma.ui.resize(msg.width, msg.height);
-    }
-
-    if (msg.type === 'get-tutorial-status') {
-        const showTutorial = await figma.clientStorage.getAsync('show_tutorial');
-        figma.ui.postMessage({ type: 'tutorial-status', showTutorial: showTutorial !== false }); // Default to true if undefined
-    }
-
-    if (msg.type === 'set-tutorial-status') {
-        await figma.clientStorage.setAsync('show_tutorial', msg.showTutorial);
-    }
-
-    if (msg.type === 'download-and-insert') {
+    } else if (msg.type === 'download-and-insert') {
         try {
             const { url, title, thumbnail } = msg;
 

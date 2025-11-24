@@ -247,6 +247,16 @@ button:disabled {
   /* Exact gap from user */
 }
 
+.intro-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
 .background-image-container {
   position: absolute;
   top: 80px;
@@ -427,13 +437,11 @@ button:disabled {
   width: 100%;
   height: 100%;
   z-index: 100;
-  /* Ensure it's on top */
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 20px;
   background: #1a1a1a;
-  /* Dark background as per screenshot */
   color: white;
 }
 
@@ -463,11 +471,9 @@ button:disabled {
   color: white;
   padding: 4px 12px;
   border-radius: 8px;
-  /* Match main inputs */
   width: 100%;
   height: 40px;
   flex: none;
-  /* Prevent growing */
 }
 
 .settings-footer {
@@ -491,45 +497,56 @@ button:disabled {
 }
 
 .container {
-  padding: 16px;
-  /* 16px padding around the content */
+  padding: 0;
+  /* Remove global padding */
   display: flex;
   flex-direction: column;
   gap: 0;
   height: 100vh;
-  /* Fixed height to viewport */
   overflow: hidden;
-  /* Prevent scroll */
   background-color: #F2F2F4;
-  /* Grey background for the whole window */
+}
+
+/* Intro Button Styles */
+.intro-button-wrapper {
+  position: absolute;
+  top: 602px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.intro-button-wrapper.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.intro-button-wrapper.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Main Screen Layout */
 .main-layout {
   display: flex;
-  gap: 16px;
-  align-items: stretch;
-  /* Stretch columns to full height */
   width: 100%;
-  flex: 1;
-  /* Fill remaining vertical space */
-  min-height: 0;
-  /* Allow shrinking */
-  padding: 0;
+  height: 100%;
+  padding: 16px;
+  /* Add padding specifically for Main screen */
+  box-sizing: border-box;
+  /* Ensure padding is included in width/height */
 }
 
 .left-column {
-  width: 400px;
+  width: 100%;
+  /* Fill available space (which is 400px inside padding) */
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
   background-color: transparent;
-  /* Transparent to show container grey */
   padding: 8px 0 0 0;
-  /* Top padding only */
-  border-radius: 8px;
-  /* Rounded corners */
 }
 
 .form-card {
@@ -539,9 +556,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  /* Spacing between fields */
   flex-grow: 1;
-  /* Fill remaining height */
   overflow: hidden;
 }
 
@@ -549,19 +564,14 @@ button:disabled {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  /* Fill remaining space in card */
   min-height: 0;
-  /* Allow shrinking */
 }
 
 .script-container textarea {
   flex-grow: 1;
-  /* Fill container */
   height: 100%;
   min-height: 0;
-  /* Override previous min-height */
   resize: none;
-  /* Disable manual resize */
 }
 
 .right-column {
