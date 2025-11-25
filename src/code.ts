@@ -31,14 +31,24 @@ figma.ui.onmessage = async (msg) => {
             const buffer = await response.arrayBuffer();
             const videoData = new Uint8Array(buffer);
 
-            // Create node
-            const node = figma.createRectangle();
-            node.resize(400, 225);
-            node.name = title || "Synthesia Video";
+            // Check if there's a selected node we can use
+            let node: RectangleNode | FrameNode;
+            const selection = figma.currentPage.selection;
 
-            // Center in viewport
-            node.x = figma.viewport.center.x - node.width / 2;
-            node.y = figma.viewport.center.y - node.height / 2;
+            if (selection.length === 1 && (selection[0].type === 'RECTANGLE' || selection[0].type === 'FRAME')) {
+                // Use the selected node
+                node = selection[0] as RectangleNode | FrameNode;
+                node.name = title || "Synthesia Video";
+            } else {
+                // Create a new node
+                node = figma.createRectangle();
+                node.resize(400, 225);
+                node.name = title || "Synthesia Video";
+
+                // Center in viewport
+                node.x = figma.viewport.center.x - node.width / 2;
+                node.y = figma.viewport.center.y - node.height / 2;
+            }
 
             try {
                 // Try to create video paint
@@ -46,23 +56,26 @@ figma.ui.onmessage = async (msg) => {
                 node.fills = [{ type: 'VIDEO', scaleMode: 'FILL', videoHash: video.hash }];
                 figma.notify('Video inserted successfully!');
             } catch (videoError: any) {
-                // Check for Drafts/Plan limitation
-                if (videoError.message.includes('Drafts') || videoError.message.includes('Pro team')) {
-                    console.warn('Video insertion failed due to Drafts limitation. Falling back to thumbnail.');
+                const errorMessage = videoError?.message || String(videoError);
+                console.warn('Video insertion failed:', errorMessage);
 
-                    if (thumbnail) {
-                        const thumbResp = await fetch(thumbnail);
-                        const thumbBuffer = await thumbResp.arrayBuffer();
-                        const image = figma.createImage(new Uint8Array(thumbBuffer));
-                        node.fills = [{ type: 'IMAGE', scaleMode: 'FILL', imageHash: image.hash }];
+                if (thumbnail) {
+                    console.log('Falling back to thumbnail...');
+                    const thumbResp = await fetch(thumbnail);
+                    const thumbBuffer = await thumbResp.arrayBuffer();
+                    const image = figma.createImage(new Uint8Array(thumbBuffer));
+                    node.fills = [{ type: 'IMAGE', scaleMode: 'FILL', imageHash: image.hash }];
 
-                        figma.notify('Inserted as image. Move file to Project to enable video.', { timeout: 5000, error: true });
-                    } else {
-                        node.remove();
-                        throw new Error("Video uploads not allowed in Drafts, and no thumbnail available.");
-                    }
+                    // Customize message based on error type if needed, or keep it generic
+                    const isDraftsError = errorMessage.includes('Drafts') || errorMessage.includes('Pro team');
+                    const notifyMsg = isDraftsError
+                        ? 'Inserted as image. Move file to Project to enable video.'
+                        : 'Video insertion failed. Inserted as image.';
+
+                    figma.notify(notifyMsg, { timeout: 5000, error: !isDraftsError });
                 } else {
                     node.remove();
+                    // Re-throw if no thumbnail to fallback to
                     throw videoError;
                 }
             }
