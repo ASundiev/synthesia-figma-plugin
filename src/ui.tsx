@@ -57,7 +57,6 @@ const App = () => {
             return;
         }
         setStep('generating');
-        // setStatus('Initializing video creation...'); // Removed
         setError('');
 
         // Use defaults if empty

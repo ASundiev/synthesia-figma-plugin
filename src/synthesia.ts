@@ -55,9 +55,3 @@ export const getVideoStatus = async (apiKey: string, videoId: string) => {
     }
 };
 
-export const downloadVideo = async (url: string): Promise<Uint8Array> => {
-    const response = await axios.get(url, {
-        responseType: 'arraybuffer',
-    });
-    return new Uint8Array(response.data);
-};
