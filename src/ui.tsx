@@ -118,7 +118,7 @@ const App = () => {
         <div className="container">
             {step === 'intro' && (
                 <div className="intro-container">
-                    <video autoPlay loop muted playsInline className="intro-video">
+                    <video autoPlay loop playsInline className="intro-video">
                         <source src={bgVideo} type="video/mp4" />
                     </video>
 
@@ -202,8 +202,95 @@ const App = () => {
             {step === 'generating' && (
                 <div className="loading-overlay">
                     <div className="loading-content">
-                        <svg width="64" height="43" viewBox="0 0 252 168" fill="none" xmlns="http://www.w3.org/2000/svg" className="loading-logo">
-                            <path d="M43.784 167.963H184.095C218.661 167.963 240.681 146.713 244.266 114.195L251.434 46.8554H203.041L196.385 108.307C195.616 116.501 190.495 121.108 182.046 121.108H48.393L43.784 167.963ZM48.393 121.108L55.0497 59.6568C55.8185 51.4625 60.9394 46.8554 69.3887 46.8554H203.041L207.652 0H67.3392C32.7733 0 10.7538 21.2526 7.16856 53.7689L0 121.108H48.393Z" fill="#3E57DA" />
+                        <svg
+                            className="loading-logo"
+                            color="#3E57DA"
+                            viewBox="0 0 474 317"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="64"
+                            height="43"
+                        >
+                            <style>
+                                {`
+                                .loading-logo .loader-scaling,
+                                .loading-logo .loader-fading {
+                                animation-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
+                                animation-duration: 0.8s;
+                                animation-iteration-count: infinite;
+                                animation-direction: alternate;
+                                }
+
+                                /* scale animation */
+                                .loading-logo .loader-scaling {
+                                animation-name: loader-scale;
+                                transform-box: fill-box;
+                                }
+
+                                .loading-logo #loader-shape-left.loader-scaling {
+                                transform-origin: left top;
+                                }
+
+                                .loading-logo #loader-shape-right.loader-scaling {
+                                transform-origin: right bottom;
+                                }
+
+                                @keyframes loader-scale {
+                                0% {
+                                    transform: scale(0.94);
+                                }
+                                100% {
+                                    transform: scale(1.06);
+                                }
+                                }
+
+                                /* fade animation */
+                                .loading-logo .loader-fading {
+                                animation-name: loader-fade;
+                                }
+
+                                @keyframes loader-fade {
+                                0% {
+                                    opacity: 0;
+                                }
+                                100% {
+                                    opacity: 1;
+                                }
+                                }
+                                `}
+                            </style>
+                            <defs>
+                                <path
+                                    id="loader-shape-left"
+                                    className="loader-scaling"
+                                    d="M370.634 205.562C369.361 218.35 358.601 228.091 345.75 228.091L0 228.091L12.8957 98.5674C18.4661 42.6181 65.538 -4.91543e-06 121.764 0L391.1 2.35461e-05L370.634 205.562Z"
+                                />
+                                <path
+                                    id="loader-shape-right"
+                                    className="loader-scaling"
+                                    d="M103.138 111.116C104.411 98.3277 115.171 88.5864 128.022 88.5864H473.772L460.876 218.11C455.306 274.059 408.234 316.678 352.008 316.678H82.6719L103.138 111.116Z"
+                                />
+                                <mask id="loader-mask-left" x="0" y="0">
+                                    <use href="#loader-shape-left" fill="#FFF" />
+                                    <use href="#loader-shape-right" fill="#000" />
+                                </mask>
+                                <mask id="loader-mask-right" x="0" y="0">
+                                    <use href="#loader-shape-right" fill="#FFF" />
+                                    <use href="#loader-shape-left" fill="#000" />
+                                </mask>
+                            </defs>
+
+                            <use
+                                href="#loader-shape-left"
+                                className="loader-fading"
+                                mask="url(#loader-mask-left)"
+                                fill="currentColor"
+                            />
+                            <use
+                                href="#loader-shape-right"
+                                className="loader-fading"
+                                mask="url(#loader-mask-right)"
+                                fill="currentColor"
+                            />
                         </svg>
                         <div className="loading-text">Initializing video creation...</div>
                         <div className="loading-subtext">This may take a few minutes.</div>
@@ -212,10 +299,9 @@ const App = () => {
             )}
 
             {step === 'success' && (
-                <div style={{ textAlign: 'center' }}>
-                    <h2 style={{ color: '#52c41a' }}>Success!</h2>
-                    <p>Video has been inserted into Figma.</p>
-                    <button onClick={() => setStep('config')} style={{ marginTop: '24px' }}>Create Another</button>
+                <div className="success-screen">
+                    <h1 className="success-heading">Well done!</h1>
+                    <button onClick={() => setStep('config')} className="success-button">Generate another one</button>
                 </div>
             )}
         </div>
